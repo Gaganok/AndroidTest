@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button loginButton = findViewById(R.id.loginButton);
         Button registerButton = findViewById(R.id.registerButton);
-
+//dfsld
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
