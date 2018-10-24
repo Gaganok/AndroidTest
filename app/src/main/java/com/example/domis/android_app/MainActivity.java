@@ -1,5 +1,6 @@
 package com.example.domis.android_app;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -15,18 +16,26 @@ public class MainActivity extends AppCompatActivity {
         Button loginButton = findViewById(R.id.loginButton);
         Button registerButton = findViewById(R.id.registerButton);
 
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setContentView(R.layout.register_layout);
-            }
-        });
-
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setContentView(R.layout.login_layout);
+                startLoginActivity();
             }
         });
+
+        registerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startRegisterActivity();
+            }
+        });
+    }
+
+    private void startLoginActivity() {
+        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+    }
+
+    private void startRegisterActivity() {
+        startActivity(new Intent(MainActivity.this, RegisterActivity.class));
     }
 }
