@@ -6,13 +6,18 @@ import android.util.Log;
 import com.google.firebase.database.*;
 
 import java.util.HashMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 public class FirebaseController {
 
     private static final FirebaseController ourInstance = new FirebaseController();
     private FirebaseDatabase database;
     private DatabaseReference myRef;
-    private HashMap<String, String> userList;
 
     public static FirebaseController getInstance() {
         return ourInstance;
@@ -20,53 +25,30 @@ public class FirebaseController {
 
     private FirebaseController() {
         database = FirebaseDatabase.getInstance();
-        getUserList();
     }
 
-    public boolean checkUserLogin(User user) {
+    public void findUser(final User user) {
+        /*final CountDownLatch done = new CountDownLatch(1);*/
 
-        System.out.println("USERNAME: " + user.getUsername());
-        System.out.println("PASSWORD: " + user.getPassword());
+        database.getReference().child("USERS")
+                .child(user.getUsername()).addListenerForSingleValueEvent(new ValueEventListener() {
 
-        if(userList.containsKey(user.getUsername()))
-        {
-            System.out.println("Key found");
-            System.out.println("Here is its value: " + userList.get(user.getUsername()));
-        }
-
-        if (userList.containsKey(user.getUsername()) && user.getPassword().equals(userList.get(user.getUsername())))
-        {
-            System.out.println("Success");
-            return true;
-        }
-        else
-        {
-            System.out.println("Kind of Success");
-            return false;
-        }
-    }
-
-    private void getUserList() {
-        userList = new HashMap<>();
-
-        myRef = database.getReference().child("USERS");
-        myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.e("Count ", "" + dataSnapshot.getChildrenCount());
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    User user1 = postSnapshot.getValue(User.class);
-                    System.out.println("FireUser: " + user1.getUsername());
-                    System.out.println("FirePass: " + user1.getPassword());
-                    userList.put(user1.getUsername(), user1.getPassword());
-                }
+                PersonalData.USER = dataSnapshot.getValue(User.class);
+                PersonalData.validate(user.getPassword());
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.d("Error", "Failed To Get the user");
             }
         });
+
+        /*try {
+            done.await(10000, TimeUnit.MILLISECONDS);
+        } catch (Throwable e) {Log.e("Error", "Exceed Waiting Time for the database");}
+*/
     }
 }
 

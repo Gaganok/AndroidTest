@@ -2,11 +2,13 @@ package com.example.domis.android_app;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.PeriodicSync;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +24,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout);
 
+        PersonalData.LOGIN_ACTIVITY = this;
         firebaseController = FirebaseController.getInstance();
 
         final EditText emailInput = findViewById(R.id.editEmail);
@@ -35,18 +38,12 @@ public class LoginActivity extends AppCompatActivity {
                 Editable userPass = passInput.getText();
 
                 User user = new User(null, userEmail.toString(), userPass.toString());
-                System.out.println(userEmail);
-                System.out.println(userPass);
-                //do some weird firebase shit to make map appear
-                if(firebaseController.checkUserLogin(user))
-                {
-                    successLogin();
-                }
+                firebaseController.findUser(user);
             }
         });
     }
 
-    private void successLogin() {
+    public void successLogin() {
         AlertDialog ad = new AlertDialog.Builder(this).create();
         ad.setMessage("Login Successful");
         ad.setButton(DialogInterface.BUTTON_POSITIVE, "Continue",
@@ -61,6 +58,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void startMapActivity()
     {
-        startActivity( new Intent(LoginActivity.this, MapsActivity.class));
+        startActivity( new Intent(this, MapsActivity.class));
     }
 }
